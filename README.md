@@ -27,12 +27,17 @@ This will try to run the application on the following ports
 - 6379  : Redis server
 - 11211 : Memcached
 
-3. Accessing the API
+3. Run migration and seeders
+```
+sail artisan migrate --seed
+```
+
+4. Accessing the API
 The API will be available here http://127.0.0.1/api
 If you prefer not to use an local ip or local host, then add:
 `127.0.0.1   social.test` to `\etc\hosts`
 
-4. Running test
+5. Running test
 This application uses the Laravel Pest tests
 ```
 sail artisan test
