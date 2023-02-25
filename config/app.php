@@ -212,4 +212,8 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 
+    /**
+     * Default password for testing
+     */
+    'demo_password' => env('DEMO_PASSWORD', 'password!'),
 ];
