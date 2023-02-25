@@ -26,7 +26,9 @@ class Post extends Model
      */
     public function likes() : BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'likes', 'user_id', 'post_id');
+        return $this
+            ->belongsToMany(User::class, 'likes', 'user_id', 'post_id')
+            ->withTimestamps();
     }
 
     /**
@@ -34,7 +36,6 @@ class Post extends Model
      */
     public function author() : BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id')
-            ->withTimestamps();
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
