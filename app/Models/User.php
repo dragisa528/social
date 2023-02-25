@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
@@ -55,17 +56,19 @@ class User extends Authenticatable
     /**
      * User followers
      */
-    public function followers() : HasManyThrough
+    public function followers() : BelongsToMany
     {
-        return $this->hasManyThrough(User::class, Follower::class, 'following_id', 'follower_id');
+        //They are following him on following_id
+        return $this->belongsToMany(User::class, 'followers', 'following_id', 'follower_id');
     }
 
     /**
      * User that the user is following
      */
-    public function follows() : HasManyThrough
+    public function follows() : BelongsToMany
     {
-        return $this->hasManyThrough(User::class, Follower::class, 'following_id', 'follower_id');
+        //he is following them on follower_id
+        return $this->belongsToMany(User::class, 'followers', 'follower_id', 'following_id');
     }
 
     /**
@@ -73,6 +76,6 @@ class User extends Authenticatable
      */
     public function likes() : HasManyThrough
     {
-        return $this->hasManyThrough(Likes::class, Post::class, 'user_id', 'post_id');
+        return $this->hasManyThrough(Like::class, Post::class, 'user_id', 'post_id');
     }
 }
