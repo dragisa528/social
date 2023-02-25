@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
+use App\Models\Post;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,10 +14,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory(10)->create();
-        User::factory()->create([
-            'name' => 'Emeka Mbah',
-            'email' => 'emeka@social.com',
-        ]);
+        $users = User::factory(10)
+        ->has(Post::factory()->count(3))
+        ->create();
     }
 }
