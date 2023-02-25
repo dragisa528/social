@@ -7,6 +7,11 @@ use Illuminate\Http\JsonResponse;
 trait ResponseHelper
 {
     /**
+     * Unauthorized
+     */
+    const UNAUTHORIZED_STATUS_CODE = 200;
+
+    /**
      * Fetch a resources or collection of resouces
      */
     const GET_STATUS_CODE = 200;
