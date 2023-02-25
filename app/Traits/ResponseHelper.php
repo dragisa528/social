@@ -3,13 +3,20 @@
 namespace App\Traits;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 trait ResponseHelper
 {
     /**
      * Unauthorized
      */
-    const UNAUTHORIZED_STATUS_CODE = 200;
+    const UNAUTHORIZED_STATUS_CODE = 401;
+
+    /**
+     * Resource not found 
+     */
+    const NOT_FOUND_STATUS_CODE = 404;
 
     /**
      * Fetch a resources or collection of resouces
@@ -37,17 +44,17 @@ trait ResponseHelper
     /**
      * Return a GET response
      */
-    public function respondToGet($response) : JsonResponse
+    public function respondToGet(JsonResource|ResourceCollection $resource) : JsonResponse
     {
-        return response($response, self::GET_STATUS_CODE)->json();
+        return response($resource, self::GET_STATUS_CODE)->json();
     }
 
     /**
      * Return a POST response
      */
-    public function respondToPost($response) : JsonResponse
+    public function respondToPost(JsonResource|ResourceCollection $resource) : JsonResponse
     {
-        return response($response, self::POST_STATUS_CODE)->json();
+        return response($resource, self::POST_STATUS_CODE)->json();
     }
 
     /**
