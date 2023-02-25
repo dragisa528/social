@@ -7,12 +7,15 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Run the migrations. 
+     * `id`, `follower_id`, `following_id`,`created_at`, `updated_at`
      */
     public function up(): void
     {
         Schema::create('followers', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('follower_id');
+            $table->unsignedBigInteger('following_id');
             $table->timestamps();
         });
     }
