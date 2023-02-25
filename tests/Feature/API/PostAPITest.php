@@ -2,13 +2,12 @@
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Database\Seeders\DatabaseSeeder;
-use Tests\TestCase;
 use Laravel\Sanctum\Sanctum;
 use App\Traits\ResponseHelper;
 use App\Models\User;
 use App\Models\Post;
 
-uses(TestCase::class, RefreshDatabase::class, ResponseHelper::class);
+uses(RefreshDatabase::class, ResponseHelper::class);
 
 /**
  * GET /api/posts
