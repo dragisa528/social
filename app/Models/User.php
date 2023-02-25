@@ -119,7 +119,7 @@ class User extends Authenticatable
             throw new ModelHelperMethodException;
         }
 
-        if($this->canFollow($user)) {
+        if($this->canFollow($user) && $this->isFollowing($user)){ 
             $this->follows()->detach($user);
         }
     }
@@ -152,5 +152,33 @@ class User extends Authenticatable
         }
 
         return $this->id != $user->id;
+    }
+
+    /**
+     * User like a given post
+     * 
+     *  @throws
+     */
+    public function likePost(Post $post) : void 
+    {
+        if(empty($this->id)) {
+            throw new ModelHelperMethodException;
+        }
+
+        $post->addLikeFor($this);
+    }
+
+    /**
+     * User unlike a given post
+     * 
+     *  @throws
+     */
+    public function unlikePost(Post $post) : void 
+    {
+        if(empty($this->id)) {
+            throw new ModelHelperMethodException;
+        }
+
+        $post->removeLikeFor($this);
     }
 }

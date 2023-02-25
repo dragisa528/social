@@ -45,7 +45,7 @@ class Post extends Model
      *
      * @throws
      */
-    public function likeFor(User $user) : void
+    public function addLikeFor(User $user) : void
     {
         if(empty($this->id)) {
             throw new ModelHelperMethodException;
@@ -61,7 +61,7 @@ class Post extends Model
      *
      * @throws
      */
-    public function unlikeFor(User $user) : void
+    public function removeLikeFor(User $user) : void
     {
         if(empty($this->id)) {
             throw new ModelHelperMethodException;
