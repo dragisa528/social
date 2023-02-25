@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Exceptions\ModelHelperMethodException;
 
 class Post extends Model
 {
@@ -27,7 +28,7 @@ class Post extends Model
     public function likes() : BelongsToMany
     {
         return $this
-            ->belongsToMany(User::class, 'likes', 'user_id', 'post_id')
+            ->belongsToMany(User::class, 'likes', 'post_id', 'user_id')
             ->withTimestamps();
     }
 
@@ -37,5 +38,51 @@ class Post extends Model
     public function author() : BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Like this post for a user
+     *
+     * @throws
+     */
+    public function likeFor(User $user) : void
+    {
+        if(empty($this->id)) {
+            throw new ModelHelperMethodException;
+        }
+
+        if(! $this->isLikedBy($user)){ 
+            $this->likes()->attach($user);
+        }
+    }
+
+    /**
+     * Unlike this post for a user
+     *
+     * @throws
+     */
+    public function unlikeFor(User $user) : void
+    {
+        if(empty($this->id)) {
+            throw new ModelHelperMethodException;
+        }
+
+        if($this->isLikedBy($user)){ 
+            $this->likes()->detach($user);
+        }
+    }
+
+    /**
+     * Check if user already liked this post
+     * 
+     * @throws
+     */
+    public function isLikedBy(User $user) : bool
+    {
+        if(empty($this->id)) {
+            throw new ModelHelperMethodException;
+        }
+
+        return $this->likes()->whereUserId($user->id)->exists();
     }
 }

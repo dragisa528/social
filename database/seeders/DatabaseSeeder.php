@@ -18,35 +18,31 @@ class DatabaseSeeder extends Seeder
     {
         // users
         $emeka = User::factory()->create([
-            'name' => 'Emeka Okafor'
+            'name' => 'Emeka Okafor ID - 1'
         ]);
 
         $taylor = User::factory()->create([
-            'name' => 'Taylor Otwel'
+            'name' => 'Taylor Otwel ID - 2'
         ]);
 
         $simon = User::factory()->create([
-            'name' => 'Simon Finx'
+            'name' => 'Simon Finx ID - 3'
         ]);
 
         // posts
         $emekaPost1 = $emeka->posts()->create([
-            'content' => 'Emeka Post ID: 1'
+            'content' => 'Emeka Post ID - 1'
         ]);
         $emekaPost2 = $emeka->posts()->create([
-            'content' => 'Emeka Post ID: 2'
+            'content' => 'Emeka Post ID - 2'
         ]);
 
-        $taylorPost1 = $taylor->posts()->create([
-            'content' => 'Taylor Post ID: 3'
+        $taylorPost3 = $taylor->posts()->create([
+            'content' => 'Taylor Post ID - 3'
         ]);
-        $taylorPost2 = $taylor->posts()->create([
-            'content' => 'Taylor Post ID: 4'
+        $taylorPost4 = $taylor->posts()->create([
+            'content' => 'Taylor Post ID - 4'
         ]);
-
-
-        dd($taylorPost2->likes()->attach($simon));
-       
 
 
 
