@@ -7,6 +7,7 @@ use Throwable;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\RecordsNotFoundException;
 use App\Helpers\ResponseHelper;
 
 class Handler extends ExceptionHandler
@@ -92,8 +93,9 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $e)
     {
         return match (true) {
-            $e instanceof ModelNotFoundException  => ResponseHelper::notFound(),
-            $e instanceof AuthenticationException => ResponseHelper::unauthenticated(),
+            $e instanceof ModelNotFoundException   => ResponseHelper::notFound(),
+            $e instanceof AuthenticationException  => ResponseHelper::unauthenticated(),
+            $e instanceof RecordsNotFoundException => ResponseHelper::notFound('Record not found'),
 
             default => parent::render($request, $e)
         };
