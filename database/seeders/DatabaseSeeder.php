@@ -18,15 +18,18 @@ class DatabaseSeeder extends Seeder
     {
         // users
         $emeka = User::factory()->create([
-            'name' => 'Emeka Okafor ID - 1'
+            'name'  => 'Emeka Okafor ID - 1',
+            'email' => 'emeka@test.com'
         ]);
 
         $taylor = User::factory()->create([
-            'name' => 'Taylor Otwel ID - 2'
+            'name'  => 'John Doe ID - 2',
+            'email' => 'john@test.com'
         ]);
 
         $simon = User::factory()->create([
-            'name' => 'Simon Finx ID - 3'
+            'name'  => 'Simon Doe ID - 3',
+            'email' => 'simon@test.com'
         ]);
 
         // posts
@@ -44,22 +47,24 @@ class DatabaseSeeder extends Seeder
             'content' => 'Taylor Post ID - 4'
         ]);
 
+        $simonPost5 = $simon->posts()->create([
+            'content' => 'Simon Post ID - 5'
+        ]);
 
         // follows
         $emeka->follow($taylor);
         $simon->follow($emeka);
+        $emeka->follow($simon);
 
         // likes
         $emeka->likePost($taylorPost3);
 
 
         // user follows posts
-        $posts = Post::fromFollowsFor($emeka)
-        ->includeTotalLikes()
-        ->latest('posts.created_at')
-        ->get();
-        dd($posts);
-
-        Post::latestOfMany();
+        // $posts = Post::fromFollowsFor($emeka)
+        // ->includeTotalLikes()
+        // ->fromRecent('posts.created_at')
+        // ->get();
+        // dd($posts);
     }
 }
