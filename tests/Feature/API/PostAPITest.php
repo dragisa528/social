@@ -125,13 +125,35 @@ it('should be able view any single post with the given ID', function ()
  */
 it('should not be able to update anyone else\'s post', function () 
 {
-   
-})->group('post');
+    $jane = User::factory()->create(['name' => 'Jane Doe ID - 1', 'email' => 'jane.doe@test.com']);
+    $john = User::factory()->create(['name' => 'John Doe ID - 2', 'email' => 'john.doe@test.com']);
+
+    $janePost = $jane->posts()->create(['content' => 'Jane Post ID - 1']); 
+
+    // John cannot update Jane's post
+    Sanctum::actingAs($john);
+    $response = $this->putJson('/api/posts/' . $janePost->id, [
+        'content' => 'Hacked you!'
+    ]);
+    $response->assertStatus(ResponseHelper::FORBIDDEN);
+    $this->assertDatabaseMissing('posts', ['id' => $janePost->id, 'content' => 'Hacked you!']);  
+})->group('post', 'post-cannot-update-others-post');
 
 it('should be able to update own post', function () 
 {
-   
-})->group('post');
+    $jane = User::factory()->create(['name' => 'Jane Doe ID - 1', 'email' => 'jane.doe@test.com']);
+    $john = User::factory()->create(['name' => 'John Doe ID - 2', 'email' => 'john.doe@test.com']);
+
+    $janePost = $jane->posts()->create(['content' => 'Jane Post ID - 1']); 
+
+    // Jane can update own post
+    Sanctum::actingAs($jane);
+    $response = $this->putJson('/api/posts/' . $janePost->id, [
+        'content' => 'More interesting content'
+    ]);
+    $response->assertStatus(ResponseHelper::NO_CONTENT);
+    $this->assertDatabaseHas('posts', ['id' => $janePost->id, 'content' => 'More interesting content']);  
+})->group('post', 'post-can-update-own-post');
 
 /**
  * DELETE /api/posts

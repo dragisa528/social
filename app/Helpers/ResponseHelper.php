@@ -28,9 +28,14 @@ class ResponseHelper
         return response(['message' => $message], self::NOT_FOUND);
     }
 
-    public static function unauthorized(string $message='The action is unauthorized.') : Response
+    public static function unauthorized(string $message='This action is unauthorized') : Response
     {
         return response(['message' => $message], self::UNAUTHORIZED);
+    }
+
+    public static function denied(string $message='Access Denied') : Response
+    {
+        return response(['message' => $message], self::FORBIDDEN);
     }
 
     public static function unauthenticated(string $message='Unauthenticated.') : Response
