@@ -1,0 +1,6 @@
+Warning: TTY mode requires /dev/tty to be read/writable.
+  [33;1mNo tests executed![39;22m[39m [2m[22m[39m
+
+  [37;1mTime:   [39;22m[39m0.01s[39m
+
+

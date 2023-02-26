@@ -33,8 +33,8 @@ Route::middleware('auth:sanctum')
     ->group(function () {
         Route::get('/',                  'index')->name('index');
         Route::get('/{id}',              'show')->name('show');
-        Route::patch('/{user}/follow',   'follow')->name('follow');
-        Route::patch('/{user}/unfollow', 'unfollow')->name('unfollow');
+        Route::patch('/{user}/follow',   'follow')->name('follow')->can('follow', 'user');
+        Route::patch('/{user}/unfollow', 'unfollow')->name('unfollow')->can('unfollow', 'user');
     });
     
     Route::controller(PostController::class)

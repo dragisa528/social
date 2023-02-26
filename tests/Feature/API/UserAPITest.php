@@ -109,62 +109,96 @@ it('shows email, follower and following counts for authenticated profile with th
 
 it('does not shows email, follower and following counts for others profile with the given ID', function () 
 {
-    $user = User::factory()->create();
-    $response = $this->getJson("/api/users/{$user->id}");
+    $jane = User::factory()->create(['name' => 'Jane Doe ID - 1', 'email' => 'jane.doe@test.com']);
+    $john = User::factory()->create(['name' => 'John Doe ID - 2', 'email' => 'john.doe@test.com']);
 
-    $response->assertStatus(responseHelper::OK);
-})->group('user');
+    Sanctum::actingAs($jane);
+    $response = $this->getJson("/api/users/{$john->id}");
+    $response->assertOk();
+    $profile = $response->decodeResponseJson()['data'];
+
+    // assert jane's cannot view john's email, followers and follows
+    expect($profile)
+    ->not
+    ->toMatchArray(
+        [$john->name, 'email' => $john->email, 'total_followers' => 0, 'total_follows' => 0]
+    );
+
+    // assert jane can see basic info like name
+    expect($profile)->toMatchArray(['id' => $john->id, 'name' => $john->name]);
+
+})->group('user', 'user-cannot-view-others-email-followers-follows');
 
 /**
  * PATCH /api/users/{id}/follow
  */
 it('should not allow unathenticated user to follow a user', function () 
 {
-    $user = User::factory()->create();
-    $response = $this->putJson("/api/users/{$user->id}/follow");
+    $jane = User::factory()->create();
+
+    $response = $this->patchJson("/api/users/{$jane->id}/follow");
+    $response->assertStatus(ResponseHelper::UNAUTHORIZED);
     
-    $response->assertStatus(responseHelper::UNAUTHORIZED);
-})->group('user');
+    $this->assertDatabaseMissing('followers', ['following_id' => $jane->id]);  
+})->group('user', 'user-unauthenticated-user-cannot-follow');
 
 it('should allow authenticated user to follow a user', function () 
 {
-    $user = User::factory()->create();
-    $response = $this->putJson("/api/users/{$user->id}/follow");
-    
-    $response->assertStatus(responseHelper::UNAUTHORIZED);
-})->group('user');
+    $jane = User::factory()->create();
+    $john = User::factory()->create();
+
+    Sanctum::actingAs($jane);
+    $response = $this->patchJson("/api/users/{$john->id}/follow");
+    $response->assertStatus(ResponseHelper::NO_CONTENT);  
+
+    $this->assertDatabaseHas('followers', ['following_id' => $john->id, 'follower_id' => $jane->id]);  
+
+})->group('user', 'user-authenticated-user-can-follow');
 
 it('should not allow authenticated user to follow their self', function () 
 {
-    $user = User::factory()->create();
-    $response = $this->putJson("/api/users/{$user->id}/follow");
-    
-    $response->assertStatus(responseHelper::UNAUTHORIZED);
-})->group('user');
+    $jane = User::factory()->create();
+
+    Sanctum::actingAs($jane);
+    $response = $this->patchJson("/api/users/{$jane->id}/follow");
+    $response->assertStatus(ResponseHelper::FORBIDDEN);  
+
+    $this->assertDatabaseMissing('followers', ['following_id' => $jane->id, 'follower_id' => $jane->id]);  
+})->group('user', 'user-authenticated-user-cannot-follow-self');
 
 /**
  * PATCH /api/users/{id}/unfollow
  */
 it('should not allow unathenticated user to unfollow a user', function () 
 {
-    $user = User::factory()->create();
-    $response = $this->putJson("/api/users/{$user->id}/unfollow");
+    $jane = User::factory()->create();
+    $response = $this->patchJson("/api/users/{$jane->id}/unfollow");
+    $response->assertStatus(ResponseHelper::UNAUTHORIZED);
     
-    $response->assertStatus(responseHelper::UNAUTHORIZED);
-})->group('user');
+    $this->assertDatabaseMissing('followers', ['following_id' => $jane->id]);  
+})->group('user', 'user-unauthenticated-user-cannot-unfollow');
 
 it('should allow authenticated user to unfollow a user', function () 
 {
-    $user = User::factory()->create();
-    $response = $this->putJson("/api/users/{$user->id}/unfollow");
-    
-    $response->assertStatus(responseHelper::NO_CONTENT);
-})->group('user');
+    $jane = User::factory()->create();
+    $john = User::factory()->create();
+
+    //Jane start following John
+    $jane->follow($john);
+    $this->assertDatabaseHas('followers', ['following_id' => $john->id, 'follower_id' => $jane->id]); 
+
+    Sanctum::actingAs($jane);
+    $response = $this->patchJson("/api/users/{$john->id}/unfollow");
+    $response->assertStatus(ResponseHelper::NO_CONTENT);  
+
+    $this->assertDatabaseMissing('followers', ['following_id' => $john->id, 'follower_id' => $jane->id]); 
+})->group('user', 'user-authenticated-user-can-unfollow');
 
 it('should not allow authenticated user to unfollow their self', function () 
 {
-    $user = User::factory()->create();
-    $response = $this->putJson("/api/users/{$user->id}/follow");
-    
-    $response->assertStatus(responseHelper::UNAUTHORIZED);
-})->group('user');
+    $jane = User::factory()->create();
+
+    Sanctum::actingAs($jane);
+    $response = $this->patchJson("/api/users/{$jane->id}/unfollow");
+    $response->assertStatus(ResponseHelper::FORBIDDEN);   
+})->group('user', 'user-authenticated-user-cannot-unfollow-self');

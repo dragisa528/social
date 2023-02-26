@@ -95,6 +95,11 @@ it('should include the total number of likes it has received', function ()
     expect($content[0])->toMatchArray(['total_likes' => 1]);
 })->group('post', 'post-check-number-of-likes');
 
+it('should show if a post is liked or not in lists by auth user', function () 
+{
+
+});
+
 /**
  * GET /api/posts/{id}
  */

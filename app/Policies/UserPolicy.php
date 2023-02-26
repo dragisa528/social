@@ -8,10 +8,22 @@ use Illuminate\Auth\Access\Response;
 class UserPolicy
 {
     /**
-     * Determine whether the user can view any models.
+     * Determine if followable
      */
-    public function viewAny(User $user, User $model): bool
+    public function follow(User $user, User $model): Response
     {
-        return $user->id === $model->id;
+        return $user->id !== $model->id
+        ? Response::allow()
+        : Response::deny('You cannot follow yourself.');
+    }
+
+    /**
+     * Determine if unfollowable
+     */
+    public function unfollow(User $user, User $model): Response
+    {
+        return $user->id !== $model->id
+        ? Response::allow()
+        : Response::deny('You cannot unfollow yourself.');
     }
 }
