@@ -6,6 +6,8 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Helpers\ResponseHelper;
 
 class Handler extends ExceptionHandler
 {
@@ -75,9 +77,25 @@ class Handler extends ExceptionHandler
      */
     protected function unauthenticated($request, AuthenticationException $exception)
     {
-        return $this->shouldReturnJson($request, $exception) || $request->is('api/*')
-                    ? response()->json(['message' => $exception->getMessage()], 401)
-                    : redirect()->guest($exception->redirectTo() ?? route('login'));
+        return response()->json(['message' => $exception->getMessage()], 401);
     }
 
+    /**
+     * Render an exception into an HTTP response.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Throwable  $e
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \Throwable
+     */
+    public function render($request, Throwable $e)
+    {
+        return match (true) {
+            $e instanceof ModelNotFoundException  => ResponseHelper::notFound(),
+            $e instanceof AuthenticationException => ResponseHelper::unauthenticated(),
+
+            default => parent::render($request, $e)
+        };
+    }
 }
