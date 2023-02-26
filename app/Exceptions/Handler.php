@@ -9,6 +9,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\RecordsNotFoundException;
 use Illuminate\Auth\Access\AuthorizationException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use App\Helpers\ResponseHelper;
 
 class Handler extends ExceptionHandler
@@ -98,6 +99,7 @@ class Handler extends ExceptionHandler
             $e instanceof AuthenticationException  => ResponseHelper::unauthenticated(),
             $e instanceof RecordsNotFoundException => ResponseHelper::notFound('Record not found'),
             $e instanceof AuthorizationException   => ResponseHelper::denied(),
+            $e instanceof MethodNotAllowedHttpException => ResponseHelper::methodNotSupported(),
 
             default => parent::render($request, $e)
         };

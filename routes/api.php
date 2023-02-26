@@ -41,11 +41,11 @@ Route::middleware('auth:sanctum')
     ->prefix('posts')
     ->name('posts.')
     ->group(function () {
-        Route::get('/',              'index')->name('index');
-        Route::put('/{post}',        'update')->name('update')->can('update', 'post');
-        Route::delete('/{post}',     'destroy')->name('destroy')->can('destroy', 'post');
-        Route::get('/{post}',        'show')->name('show');
-        Route::get('/{post}/like',   'like')->name('like');
-        Route::get('/{post}/unlike', 'unlike')->name('unlike');
+        Route::get('/',                'index')->name('index');
+        Route::put('/{post}',          'update')->name('update')->can('update', 'post');
+        Route::delete('/{post}',       'destroy')->name('destroy')->can('destroy', 'post');
+        Route::get('/{post}',          'show')->name('show');
+        Route::patch('/{post}/like',   'like')->name('like');
+        Route::patch('/{post}/unlike', 'unlike')->name('unlike');
     });
 });

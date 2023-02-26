@@ -48,7 +48,7 @@ class PostController extends Controller
     public function update(UpdatePostRequest $request, Post $post)
     {
         $post->update(['content' => $request->validated('content')]);
-
+        
         return response()->noContent();
     }
 

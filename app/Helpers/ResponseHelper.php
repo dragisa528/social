@@ -10,8 +10,9 @@ class ResponseHelper
     const CREATED      = 201;
     const NO_CONTENT   = 204;
     const UNAUTHORIZED = 401;
-    const FORBIDDEN    = 403;
-    const NOT_FOUND    = 404;
+    const FORBIDDEN            = 403;
+    const NOT_FOUND            = 404;
+    const METHOD_NOT_SUPPORTED = 405;
 
     public static function oK($resource) : Response
     {
@@ -36,6 +37,11 @@ class ResponseHelper
     public static function denied(string $message='Access Denied') : Response
     {
         return response(['message' => $message], self::FORBIDDEN);
+    }
+
+    public static function methodNotSupported(string $message='Method not supported') : Response
+    {
+        return response(['message' => $message], self::METHOD_NOT_SUPPORTED);
     }
 
     public static function unauthenticated(string $message='Unauthenticated.') : Response
