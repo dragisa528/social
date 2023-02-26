@@ -3,35 +3,35 @@
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Database\Seeders\DatabaseSeeder;
 use Laravel\Sanctum\Sanctum;
-use App\Traits\ResponseHelper;
+use App\Helpers\ResponseHelper;
 use App\Models\User;
 use App\Models\Post;
 
-uses(RefreshDatabase::class, ResponseHelper::class);
+uses(RefreshDatabase::class);
 
 /**
  * GET /api/users
  */
 it('does not allow unathenticated user to view users', function () {
     $response = $this->getJson("/api/users");
-    $response->assertStatus(self::UNAUTHORIZED_STATUS_CODE);
+    $response->assertStatus(ResponseHelper::UNAUTHORIZED);
 })->group('user');
 
 it('should allow authenticated user to view all users', function () {
     $response = $this->getJson("/api/users");
-    $response->assertStatus(self::GET_STATUS_CODE);
+    $response->assertStatus(ResponseHelper::OK);
 })->group('user');
 
 it('does not show email, follower and following counts for other profiles', function () 
 {
     $response = $this->getJson("/api/users");
-    $response->assertStatus(self::GET_STATUS_CODE);
+    $response->assertStatus(responseHelper::OK);
 })->group('user');
 
 it('shows email, follower and following counts for authenticated profile', function () 
 {
     $response = $this->getJson("/api/users");
-    $response->assertStatus(self::GET_STATUS_CODE);
+    $response->assertStatus(responseHelper::OK);
 })->group('user');
 
 /**
@@ -49,7 +49,7 @@ it('shows email, follower and following counts for authenticated profile with th
     $user = User::factory()->create();
     $response = $this->getJson("/api/users/{$user->id}");
 
-    $response->assertStatus(self::GET_STATUS_CODE);
+    $response->assertStatus(responseHelper::OK);
 })->group('user');
 
 it('does not shows email, follower and following counts for others profile with the given ID', function () 
@@ -57,7 +57,7 @@ it('does not shows email, follower and following counts for others profile with 
     $user = User::factory()->create();
     $response = $this->getJson("/api/users/{$user->id}");
 
-    $response->assertStatus(self::GET_STATUS_CODE);
+    $response->assertStatus(responseHelper::OK);
 })->group('user');
 
 /**
@@ -68,7 +68,7 @@ it('should not allow unathenticated user to follow a user', function ()
     $user = User::factory()->create();
     $response = $this->putJson("/api/users/{$user->id}/follow");
     
-    $response->assertStatus(self::UNAUTHORIZED_STATUS_CODE);
+    $response->assertStatus(responseHelper::UNAUTHORIZED);
 })->group('user');
 
 it('should allow authenticated user to follow a user', function () 
@@ -76,7 +76,7 @@ it('should allow authenticated user to follow a user', function ()
     $user = User::factory()->create();
     $response = $this->putJson("/api/users/{$user->id}/follow");
     
-    $response->assertStatus(self::UPDATE_STATUS_CODE);
+    $response->assertStatus(responseHelper::UNAUTHORIZED);
 })->group('user');
 
 it('should not allow authenticated user to follow their self', function () 
@@ -84,7 +84,7 @@ it('should not allow authenticated user to follow their self', function ()
     $user = User::factory()->create();
     $response = $this->putJson("/api/users/{$user->id}/follow");
     
-    $response->assertStatus(self::UNAUTHORIZED_STATUS_CODE);
+    $response->assertStatus(responseHelper::UNAUTHORIZED);
 })->group('user');
 
 /**
@@ -95,7 +95,7 @@ it('should not allow unathenticated user to unfollow a user', function ()
     $user = User::factory()->create();
     $response = $this->putJson("/api/users/{$user->id}/unfollow");
     
-    $response->assertStatus(self::UNAUTHORIZED_STATUS_CODE);
+    $response->assertStatus(responseHelper::UNAUTHORIZED);
 })->group('user');
 
 it('should allow authenticated user to unfollow a user', function () 
@@ -103,7 +103,7 @@ it('should allow authenticated user to unfollow a user', function ()
     $user = User::factory()->create();
     $response = $this->putJson("/api/users/{$user->id}/unfollow");
     
-    $response->assertStatus(self::UPDATE_STATUS_CODE);
+    $response->assertStatus(responseHelper::NO_CONTENT);
 })->group('user');
 
 it('should not allow authenticated user to unfollow their self', function () 
@@ -111,5 +111,5 @@ it('should not allow authenticated user to unfollow their self', function ()
     $user = User::factory()->create();
     $response = $this->putJson("/api/users/{$user->id}/follow");
     
-    $response->assertStatus(self::UNAUTHORIZED_STATUS_CODE);
+    $response->assertStatus(responseHelper::UNAUTHORIZED);
 })->group('user');

@@ -51,6 +51,9 @@ class DatabaseSeeder extends Seeder
             'content' => 'Simon Post ID - 5'
         ]);
 
+        $taylorPost3->setCreatedAt(\Carbon\Carbon::yesterday());
+        $taylorPost3->save();
+
         // follows
         $emeka->follow($taylor);
         $simon->follow($emeka);
