@@ -12,13 +12,18 @@ uses(RefreshDatabase::class);
 /**
  * GET /api/users
  */
-it('does not allow unathenticated user to view users', function () {
-    $response = $this->getJson("/api/users");
-    $response->assertStatus(ResponseHelper::UNAUTHORIZED);
-})->group('user');
+it('does not allow unathenticated user to view users', function () 
+{
+    $response = $this->getJson('/api/posts');
+    $response->assertStatus(responseHelper::UNAUTHORIZED);
+})->group('user', 'user-unauthenticated-disallowed');
 
-it('should allow authenticated user to view all users', function () {
+it('should allow authenticated user to view all users', function () 
+{
+    $jane = User::factory()->create();
+    Sanctum::actingAs($jane);
     $response = $this->getJson("/api/users");
+
     $response->assertStatus(ResponseHelper::OK);
 })->group('user');
 

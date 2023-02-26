@@ -21,9 +21,9 @@ it('does not allow unathenticated user to view posts', function () {
 it('fetches a list of all posts from the users the authenticated user follows', function () 
 {
     // create users
-    $jane = User::factory()->create(['name' => 'Jane Doe ID - 1', 'email' => 'jane.doe@test.com']);
-    $john = User::factory()->create(['name' => 'John Doe ID - 2', 'email' => 'john.doe@test.com']);
-    $mike = User::factory()->create(['name' => 'Mike Doe ID - 3', 'email' => 'mike.doe@test.com']);
+    $jane = User::factory()->create();
+    $john = User::factory()->create();
+    $mike = User::factory()->create();
 
     // create posts
     $janePost = $jane->posts()->create(['content' => 'Jane Post ID - 1']); 
