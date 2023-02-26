@@ -5,7 +5,6 @@ use Database\Seeders\DatabaseSeeder;
 use Laravel\Sanctum\Sanctum;
 use App\Helpers\ResponseHelper;
 use App\Models\User;
-use App\Models\Post;
 
 uses(RefreshDatabase::class);
 

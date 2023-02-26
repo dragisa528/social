@@ -5,9 +5,6 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
-use App\Models\Post;
-use App\Models\Follower;
-use App\Models\Like;
 
 class DatabaseSeeder extends Seeder
 {
@@ -61,23 +58,5 @@ class DatabaseSeeder extends Seeder
 
         // likes
         $emeka->likePost($taylorPost3);
-
-
-        // //users
-        // $users = User::query()
-        // ->includeFollowersCount()
-        // ->includeFollowsCount()
-        // ->paginate();
-
-        // dd($users);
-
-        // // user follows posts
-        // $posts = Post::query()
-        // ->fromFollowsFor($emeka)
-        // ->includeTotalLikes()
-        // ->includeLikeStatusFor($emeka)
-        // ->fromRecent()
-        // ->paginate();
-        // dd($posts);
     }
 }

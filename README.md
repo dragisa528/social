@@ -43,4 +43,46 @@ This application uses the Laravel Pest tests
 sail artisan test
 ```
 
-## API Document
+## API Endpoints
+
+```
+GET|HEAD    api/posts ................................ posts.index › PostController@index
+  PUT       api/posts/{post} ......................... posts.update › PostController@update
+  DELETE    api/posts/{post} ......................... posts.destroy › PostController@destroy
+  GET|HEAD  api/posts/{post} ......................... posts.show › PostController@show
+  PATCH     api/posts/{post}/like .................... posts.like › PostController@like
+  PATCH     api/posts/{post}/unlike .................. posts.unlike › PostController@unlike
+  POST      api/token/fetch .......................... TokenController@fetch
+  POST      api/token/revoke ......................... TokenController@revoke
+  GET|HEAD  api/users ................................ users.index › UserController@index
+  GET|HEAD  api/users/{id} ........................... users.show › UserController@show
+  PATCH     api/users/{user}/follow .................. users.follow › UserController@follow
+  PATCH     api/users/{user}/unfollow ................ users.unfollow › UserController@unfollow
+```
+
+###
+Testing via postman (Default password is in .env)
+- emeka@test.com
+- john@test.com
+- simon@test.com
+
+NB: The .env will be commit for demo purpose
+
+1. Send a POST request to fetch a token
+```
+api/token/fetch
+
+payload:
+email:emeka@test.com
+password:
+```
+
+2. Use token, in the header
+```
+Authorization Bearer <token>
+
+Example
+Authorization Bearer 1|IIoR9zCDPNaIaWQIxptc9YwcD0dp1RB1a8WAC1KZ
+```
+
+NB: Preferable way of testing is by running tests

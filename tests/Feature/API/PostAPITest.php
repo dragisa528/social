@@ -97,8 +97,35 @@ it('should include the total number of likes it has received', function ()
 
 it('should show if a post is liked or not in lists by auth user', function () 
 {
+    $jane = User::factory()->create();
+    $john = User::factory()->create();
+    $mike = User::factory()->create();
 
-});
+    // posts
+    $janePost = $jane->posts()->create(['content' => 'Jane Post ID - 1']); 
+    $johnPost = $john->posts()->create(['content' => 'John Post ID - 2']); 
+
+    //mike follows
+    $mike->follow($jane);
+    $mike->follow($john);
+
+    // mike post likes
+    $mike->likePost($janePost);
+
+    Sanctum::actingAs($mike);
+    $response = $this->getJson('/api/posts');
+    $response->assertOk();
+    $content = $response->decodeResponseJson()['data'];
+
+    // assert mike liked jane's post
+    expect($content[0])
+    ->toMatchArray(['id' => $janePost->id, 'user_id' => $jane->id, 'liked' => 1]);
+
+    // assert mike did not like John's post
+    expect($content[1])
+    ->toMatchArray(['id' => $johnPost->id, 'user_id' => $john->id, 'liked' => 0]);
+
+})->group('post', 'post-indicate-auth-user-liked-post');
 
 /**
  * GET /api/posts/{id}
