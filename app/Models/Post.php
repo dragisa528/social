@@ -42,7 +42,7 @@ class Post extends Model
     }
 
     /**
-     * Followers posts
+     * Scope a query to fetch posts from users a given user follow.
      */
     public function scopeFromFollowsFor(Builder $query, User $user) : void
     {
@@ -51,14 +51,20 @@ class Post extends Model
             ->where('followers.follower_id', $user->id);
     }
 
+    /**
+     * Scope a query to order posts from the most recent.
+     */
     public function scopeFromRecent(Builder $query) : void
     {
         $query->latest('posts.created_at');
     }
 
+    /**
+     * Scope a query include post's total likes.
+     */
     public function scopeIncludeTotalLikes(Builder $query) : void 
     {
-        $query->withCount(['likes']);
+        $query->withCount('likes as total_likes');
     }
 
     /**
