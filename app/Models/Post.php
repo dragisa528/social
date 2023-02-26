@@ -61,6 +61,14 @@ class Post extends Model
     }
 
     /**
+     * Scope a query to fetch posts related to given post ID.
+     */
+    public function scopeById(Builder $query, int $postId) : void
+    {
+        $query->where('posts.id', $postId);
+    }
+
+    /**
      * Scope a query to include post's total likes.
      */
     public function scopeIncludeTotalLikes(Builder $query) : void 

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\PostResource;
 use App\Http\Resources\PostCollection;
@@ -35,11 +34,9 @@ class PostController extends Controller
         $user = $this->user();
 
         $post = Post::query()
-        ->whereId($id)
-        ->fromFollowsFor($user)
+        ->byId($id)
         ->includeTotalLikes()
         ->includeLikeStatusFor($user)
-        ->fromRecent()
         ->firstOrFail();
 
         return new PostResource($post);
@@ -70,7 +67,7 @@ class PostController extends Controller
      */
     public function like(Post $post)
     {
-        $this->user()->unlike($post);
+        $this->user()->likePost($post);
         
         return response()->noContent();
     }
@@ -80,7 +77,7 @@ class PostController extends Controller
      */
     public function unlike(Post $post)
     {
-        $this->user()->like($post);
+        $this->user()->unlikePost($post);
 
         return response()->noContent();
     }

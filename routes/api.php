@@ -42,8 +42,8 @@ Route::middleware('auth:sanctum')
     ->name('posts.')
     ->group(function () {
         Route::get('/',              'index')->name('index');
-        Route::post('/',             'store')->name('store');
-        Route::put('/{post}',        'update')->name('update');
+        Route::put('/{post}',        'update')->name('update')->can('update', Post::class);
+        Route::delete('/{post}',     'destroy')->name('destroy')->can('destroy', Post::class);
         Route::get('/{post}',        'show')->name('show');
         Route::get('/{post}/like',   'like')->name('like');
         Route::get('/{post}/unlike', 'unlike')->name('unlike');
