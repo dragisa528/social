@@ -31,21 +31,21 @@ Route::middleware('auth:sanctum')
     ->prefix('users')
     ->name('users.')
     ->group(function () {
-        Route::get('/',                'index')->name('index');
-        Route::post('/',               'store')->name('store');
-        Route::put('/{user}',          'update')->name('store');
-        Route::get('/{user}/follow',   'follow')->name('follow');
-        Route::get('/{user}/unfollow', 'unfollow')->name('unfollow');
+        Route::get('/',                  'index')->name('index');
+        Route::get('/{user}',            'show')->name('show');
+        Route::patch('/{user}/follow',   'follow')->name('follow');
+        Route::patch('/{user}/unfollow', 'unfollow')->name('unfollow');
     });
     
     Route::controller(PostController::class)
     ->prefix('posts')
     ->name('posts.')
     ->group(function () {
-        Route::get('/',                'index')->name('index');
-        Route::post('/',               'store')->name('store');
-        Route::put('/{post}',          'update')->name('store');
-        Route::get('/{post}/follow',   'follow')->name('follow');
-        Route::get('/{post}/unfollow', 'unfollow')->name('unfollow');
+        Route::get('/',              'index')->name('index');
+        Route::post('/',             'store')->name('store');
+        Route::put('/{post}',        'update')->name('update');
+        Route::get('/{post}',        'show')->name('show');
+        Route::get('/{post}/like',   'like')->name('like');
+        Route::get('/{post}/unlike', 'unlike')->name('unlike');
     });
 });

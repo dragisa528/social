@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use App\Exceptions\ModelHelperMethodException;
 
 class Post extends Model
@@ -22,7 +23,7 @@ class Post extends Model
         'user_id',
         'content'
     ];
-
+    
     /**
      * Post likes
      */
@@ -60,12 +61,22 @@ class Post extends Model
     }
 
     /**
-     * Scope a query include post's total likes.
+     * Scope a query to include post's total likes.
      */
     public function scopeIncludeTotalLikes(Builder $query) : void 
     {
         $query->withCount('likes as total_likes');
     }
+
+    /**
+     * Scope a query to status which determines if user has liked the post or not.
+     */
+    public function scopeIncludeLikeStatusFor(Builder $query, User $user) : void 
+    {
+        $query->withCount(['likes as liked' => fn(Builder $query) => $query->whereUserId($user->id)]);
+    }
+
+    //whether the authenticated user has liked the post
 
     /**
      * Like this post for a user

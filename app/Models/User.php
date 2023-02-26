@@ -80,33 +80,29 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
-//     followers
-// `id`, `follower_id`, `following_id`,`created_at`, `updated_at`
-
-    public function scopeFollowsPosts(Builder $query) : void
+    /**
+     * Scope a query to include user's email and follower counts
+     */
+    public function scopeIncludeFollowersCount(Builder $query) : void 
     {
-        $query
-            ->join('followers', 'followers.following_id', '=', 'users.id')
-            ->join('posts', 'followers.follower_id', '=', 'posts.user_id');
-    }
-    
-    public function followsss() : BelongsToMany
-    {
-        //he is following them on follower_id
-        return $this
-            ->belongsToMany(User::class, 'followers', 'follower_id', 'following_id')
-            ->withTimestamps()
-            ->join('posts', 'followers.follower_id', '=', 'posts.user_id');
+        $query->withCount('followers as total_followers');
     }
 
     /**
-     * Scope a query to return posts from users this user follows
+     * Scope a query to include user's following counts
      */
-    // public function followsPosts() : BelongsToMany
-    // {
-    //     return $this
-    //         ->belongsToMany(Post::class, Follower::class, 'user_id', 'following_id');
-    // }
+    public function scopeIncludeFollowsCount(Builder $query) : void 
+    {
+        $query->withCount('follows as total_follows');
+    }
+
+    /**
+     * Scope a query to status which determines if user has liked the post or not.
+     */
+    public function scopeIncludeLikeStatusFor(Builder $query, User $user) : void 
+    {
+        $query->withCount(['likes as liked' => fn(Builder $query) => $query->whereUserId($user->id)]);
+    }
 
     /**
      * User likes

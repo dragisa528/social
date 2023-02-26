@@ -10,4 +10,9 @@ use App\Traits\ResponseHelper;
 class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
+
+    protected function user()
+    {
+        return request()->user();
+    }
 }
