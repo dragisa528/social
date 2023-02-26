@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreUserRequest;
-use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\UserCollection;
 use App\Models\User;
@@ -26,14 +24,13 @@ class UserController extends Controller
     /**
      * Fetch the specified resource.
      */
-    public function show(User $user)
+    public function show(int $id)
     {
-        if($user->id == $this->user()->id) {
-             $user = $user
-            ->includeFollowersCount()
-            ->includeFollowsCount()
-            ->first();
-        }
+        $user = User::query()
+        ->whereId($id)
+        ->includeFollowersCount()
+        ->includeFollowsCount()
+        ->firstOrFail();
 
         return new UserResource($user);
     }

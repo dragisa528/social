@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
+use App\Http\Resources\PostResource;
+use App\Http\Resources\PostCollection;
 use App\Models\Post;
 
 class PostController extends Controller
@@ -13,23 +15,34 @@ class PostController extends Controller
      */
     public function index()
     {
-        //
-    }
+        $user = $this->user();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StorePostRequest $request)
-    {
-        //
+        $posts = Post::query()
+        ->fromFollowsFor($user)
+        ->includeTotalLikes()
+        ->includeLikeStatusFor($user)
+        ->fromRecent()
+        ->paginate();
+
+        return new PostCollection($posts);
     }
 
     /**
      * Fetch the specified resource.
      */
-    public function show(Post $post)
+    public function show(int $id)
     {
-        //
+        $user = $this->user();
+
+        $post = Post::query()
+        ->whereId($id)
+        ->fromFollowsFor($user)
+        ->includeTotalLikes()
+        ->includeLikeStatusFor($user)
+        ->fromRecent()
+        ->firstOrFail();
+
+        return new PostResource($post);
     }
 
     /**
@@ -37,7 +50,9 @@ class PostController extends Controller
      */
     public function update(UpdatePostRequest $request, Post $post)
     {
-        //
+        $post->updateContent($request->validated('content'));
+
+        return response()->noContent();
     }
 
     /**
@@ -45,7 +60,9 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        $post->delete();
+
+        return response()->noContent();
     }
 
      /**

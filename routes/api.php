@@ -32,7 +32,7 @@ Route::middleware('auth:sanctum')
     ->name('users.')
     ->group(function () {
         Route::get('/',                  'index')->name('index');
-        Route::get('/{user}',            'show')->name('show');
+        Route::get('/{id}',              'show')->name('show');
         Route::patch('/{user}/follow',   'follow')->name('follow');
         Route::patch('/{user}/unfollow', 'unfollow')->name('unfollow');
     });
