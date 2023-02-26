@@ -80,6 +80,34 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
+//     followers
+// `id`, `follower_id`, `following_id`,`created_at`, `updated_at`
+
+    public function scopeFollowsPosts(Builder $query) : void
+    {
+        $query
+            ->join('followers', 'followers.following_id', '=', 'users.id')
+            ->join('posts', 'followers.follower_id', '=', 'posts.user_id');
+    }
+    
+    public function followsss() : BelongsToMany
+    {
+        //he is following them on follower_id
+        return $this
+            ->belongsToMany(User::class, 'followers', 'follower_id', 'following_id')
+            ->withTimestamps()
+            ->join('posts', 'followers.follower_id', '=', 'posts.user_id');
+    }
+
+    /**
+     * Scope a query to return posts from users this user follows
+     */
+    // public function followsPosts() : BelongsToMany
+    // {
+    //     return $this
+    //         ->belongsToMany(Post::class, Follower::class, 'user_id', 'following_id');
+    // }
+
     /**
      * User likes
      */

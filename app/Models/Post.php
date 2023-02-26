@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Builder;
 use App\Exceptions\ModelHelperMethodException;
 
 class Post extends Model
@@ -38,6 +39,26 @@ class Post extends Model
     public function author() : BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Followers posts
+     */
+    public function scopeFromFollowsFor(Builder $query, User $user) : void
+    {
+        $query
+            ->join('followers', 'followers.following_id', '=', 'posts.user_id')
+            ->where('followers.follower_id', $user->id);
+    }
+
+    public function scopeFromRecent(Builder $query) : void
+    {
+        $query->latest('posts.created_at');
+    }
+
+    public function scopeIncludeTotalLikes(Builder $query) : void 
+    {
+        $query->withCount(['likes']);
     }
 
     /**

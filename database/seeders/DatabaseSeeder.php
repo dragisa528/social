@@ -51,5 +51,15 @@ class DatabaseSeeder extends Seeder
 
         // likes
         $emeka->likePost($taylorPost3);
+
+
+        // user follows posts
+        $posts = Post::fromFollowsFor($emeka)
+        ->includeTotalLikes()
+        ->latest('posts.created_at')
+        ->get();
+        dd($posts);
+
+        Post::latestOfMany();
     }
 }
