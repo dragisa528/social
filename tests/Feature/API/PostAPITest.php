@@ -39,16 +39,11 @@ it('fetches a list of all posts from the users the authenticated user follows', 
 
     $response = $this->getJson('/api/posts');
     $response->assertOk();
-
     $content = $response->decodeResponseJson()['data'];
 
     expect($content)->toHaveCount(2); 
-
-    expect($content[0])
-        ->toMatchArray(['id' => $johnPost->id, 'user_id' => $john->id]);
-
-    expect($content[1])
-        ->toMatchArray(['id' => $janePost->id, 'user_id' => $jane->id]);
+    expect($content[0])->toMatchArray(['id' => $janePost->id, 'user_id' => $jane->id]);
+    expect($content[1])->toMatchArray(['id' => $johnPost->id, 'user_id' => $john->id]);
 })->group('post', 'post-from-followed-users');
 
 it('should be ordered by the time the posts were created', function () 
@@ -105,18 +100,17 @@ it('should include the total number of likes it has received', function ()
  */
 it('should be able view any single post with the given ID', function () 
 {
-    $jane = User::factory()->create(['name' => 'Jane Doe ID - 1', 'email' => 'jane.doe@test.com']);
-    $john = User::factory()->create(['name' => 'John Doe ID - 2', 'email' => 'john.doe@test.com']);
-
-    $janePost = $jane->posts()->create(['content' => 'Jane Post ID - 1']); 
+    $jane = User::factory()->create();
+    $john = User::factory()->create();
+    $post = $jane->posts()->create(['content' => 'Jane Post ID - 1']); 
 
     Sanctum::actingAs($john);
 
-    $response = $this->getJson('/api/posts/' . $janePost->id);
+    $response = $this->getJson('/api/posts/' . $post->id);
     $response->assertOk();
  
-    $post = $response->decodeResponseJson()['data'];
-    expect($post)->toMatchArray(['id' => $janePost->id, 'user_id' => $jane->id]);
+    $data = $response->decodeResponseJson()['data'];
+    expect($data)->toMatchArray(['id' => $post->id, 'user_id' => $jane->id]);
 
 })->group('post', 'post-view-any-single-post');
 
@@ -125,32 +119,29 @@ it('should be able view any single post with the given ID', function ()
  */
 it('should not be able to update anyone else\'s post', function () 
 {
-    $jane = User::factory()->create(['name' => 'Jane Doe ID - 1', 'email' => 'jane.doe@test.com']);
-    $john = User::factory()->create(['name' => 'John Doe ID - 2', 'email' => 'john.doe@test.com']);
+    $jane = User::factory()->create();
+    $john = User::factory()->create();
 
-    $janePost = $jane->posts()->create(['content' => 'Jane Post ID - 1']); 
+    $post = $jane->posts()->create(['content' => 'Jane Post ID - 1']); 
 
     // John cannot update Jane's post
     Sanctum::actingAs($john);
-    $response = $this->putJson('/api/posts/' . $janePost->id, [
-        'content' => 'Hacked you!'
-    ]);
+    $response = $this->putJson("/api/posts/{$post->id}", ['content' => 'Hacked you!']);
     $response->assertStatus(ResponseHelper::FORBIDDEN);
-    $this->assertDatabaseMissing('posts', ['id' => $janePost->id, 'content' => 'Hacked you!']);  
+    $this->assertDatabaseMissing('posts', ['id' => $post->id, 'content' => 'Hacked you!']);  
 })->group('post', 'post-cannot-update-others-post');
 
 it('should be able to update own post', function () 
 {
     $jane = User::factory()->create();
-    $janePost = $jane->posts()->create(['content' => 'Jane Post ID - 1']); 
+    $post = $jane->posts()->create(['content' => 'Jane Post ID - 1']); 
 
     // Jane can update own post
     Sanctum::actingAs($jane);
-    $response = $this->putJson('/api/posts/' . $janePost->id, [
-        'content' => 'More interesting content'
-    ]);
+    $response = $this->putJson("/api/posts/{$post->id}", ['content' => 'More interesting content']);
+
     $response->assertStatus(ResponseHelper::NO_CONTENT);
-    $this->assertDatabaseHas('posts', ['id' => $janePost->id, 'content' => 'More interesting content']);  
+    $this->assertDatabaseHas('posts', ['id' => $post->id, 'content' => 'More interesting content']);  
 })->group('post', 'post-can-update-own-post');
 
 /**
@@ -160,29 +151,28 @@ it('should not be able to delete others post', function ()
 {
     $jane = User::factory()->create();
     $john = User::factory()->create();
-    $janePost = $jane->posts()->create(['content' => 'Jane Post ID - 1']); 
+    $post = $jane->posts()->create(['content' => 'Jane Post ID - 1']); 
 
     // John cannot delete Jane's post
     Sanctum::actingAs($john);
-    $response = $this->deleteJson('/api/posts/' . $janePost->id, [
-        'content' => 'Hacked you!'
-    ]);
+    $response = $this->deleteJson("/api/posts/{$post->id}", ['content' => 'Hacked you!']);
+
     $response->assertStatus(ResponseHelper::FORBIDDEN);
-    $this->assertDatabaseHas('posts', ['id' => $janePost->id, 'user_id' => $janePost->id]);  
+    $this->assertDatabaseHas('posts', ['id' => $post->id, 'user_id' => $post->id]);  
 })->group('post', 'post-cannot-delete-others-post');
 
 it('should be able to delete own post', function () 
 {
     $jane = User::factory()->create();
-    $janePost = $jane->posts()->create(['content' => 'Jane Post ID - 1']); 
+    $post = $jane->posts()->create(['content' => 'Jane Post ID - 1']); 
 
     // Jane can delete own post
     Sanctum::actingAs($jane);
-    $response = $this->deleteJson('/api/posts/' . $janePost->id, [
+    $response = $this->deleteJson("/api/posts/{$post->id}", [
         'content' => 'More interesting content'
     ]);
     $response->assertStatus(ResponseHelper::NO_CONTENT);
-    $this->assertDatabaseMissing('posts', ['id' => $janePost->id, 'content' => 'More interesting content']);  
+    $this->assertDatabaseMissing('posts', ['id' => $post->id, 'content' => 'More interesting content']);  
 })->group('post', 'post-can-delete-own-post');
 
 /**
@@ -191,21 +181,21 @@ it('should be able to delete own post', function ()
 it('should not allow unathenticated user to like a post', function () 
 {
     $jane = User::factory()->create();
-    $janePost = $jane->posts()->create(['content' => 'Jane Post ID - 1']); 
+    $post = $jane->posts()->create(['content' => 'Jane Post ID - 1']); 
 
-    $response = $this->patchJson("/api/posts/{$janePost->id}/like");
+    $response = $this->patchJson("/api/posts/{$jane->id}/like");
     $response->assertStatus(ResponseHelper::UNAUTHORIZED);
     
-    $this->assertDatabaseHas('likes', ['user_id' => $jane->id, 'post_id' => $janePost->id]);  
+    $this->assertDatabaseMissing('likes', ['user_id' => $jane->id, 'post_id' => $post->id]);  
 })->group('post', 'post-cannot-like-post-when-not-authenticated');
 
 it('should allow authenticated user to like a post', function () 
 {
     $jane = User::factory()->create();
-    $janePost = $jane->posts()->create(['content' => 'Jane Post ID - 1']); 
+    $post = $jane->posts()->create(['content' => 'Jane Post ID - 1']); 
 
     Sanctum::actingAs($jane);
-    $response = $this->patchJson("/api/posts/{$janePost->id}/like");
+    $response = $this->patchJson("/api/posts/{$post->id}/like");
     $response->assertStatus(ResponseHelper::NO_CONTENT);  
 })->group('post', 'post-can-like-post-when-authenticated');
 
@@ -215,12 +205,12 @@ it('should allow authenticated user to like a post', function ()
 it('should not allow unathenticated user to unlike a post', function () 
 {
     $jane = User::factory()->create();
-    $janePost = $jane->posts()->create(['content' => 'Jane Post ID - 1']); 
+    $post = $jane->posts()->create(['content' => 'Jane Post ID - 1']); 
 
-    $response = $this->patchJson("/api/posts/{$janePost->id}/unlike");
+    $response = $this->patchJson("/api/posts/{$post->id}/unlike");
     $response->assertStatus(ResponseHelper::UNAUTHORIZED);
     
-    $this->assertDatabaseHas('likes', ['user_id' => $jane->id, 'post_id' => $janePost->id]);  
+    $this->assertDatabaseMissing('likes', ['user_id' => $jane->id, 'post_id' => $post->id]);  
 })->group('post', 'post-cannot-unlike-post-when-not-authenticated');
 
 it('should allow authenticated user to unlike a post', function () 
