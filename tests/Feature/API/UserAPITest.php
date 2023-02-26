@@ -83,11 +83,29 @@ it('should be able view any single user with the given ID', function ()
 
 it('shows email, follower and following counts for authenticated profile with the given ID', function () 
 {
-    $user = User::factory()->create();
-    $response = $this->getJson("/api/users/{$user->id}");
+    $jane = User::factory()->create(['name' => 'Jane Doe ID - 1', 'email' => 'jane.doe@test.com']);
+    $john = User::factory()->create(['name' => 'John Doe ID - 2', 'email' => 'john.doe@test.com']);
 
-    $response->assertStatus(responseHelper::OK);
-})->group('user');
+    Sanctum::actingAs($jane);
+
+    // when jane view John's profile
+    $response = $this->getJson("/api/users/{$john->id}");
+    $response->assertOk();
+    $johnProfile = $response->decodeResponseJson()['data'];
+
+    expect($johnProfile)->toMatchArray(['id' => $john->id, 'name' => $john->name]);
+    expect($johnProfile)->not->toMatchArray(['email' => $john->email, 'total_followers' => 0, 'total_follows' => 0]);
+
+    // when jane view own profile
+    $response = $this->getJson("/api/users/{$jane->id}");
+    $response->assertOk();
+    $janeProfile = $response->decodeResponseJson()['data'];
+
+    expect($janeProfile)->toMatchArray(
+        ['id' => $jane->id, 'name' => $jane->name, 'email' => $jane->email, 'total_followers' => 0, 'total_follows' => 0]
+    );
+
+})->group('user', 'user-show-more-details-for-only-auth-user');
 
 it('does not shows email, follower and following counts for others profile with the given ID', function () 
 {
