@@ -17,6 +17,8 @@ return new class extends Migration
             $table->unsignedBigInteger('follower_id');
             $table->unsignedBigInteger('following_id');
             $table->timestamps();
+
+            $table->index(['follower_id', 'following_id']);
         });
     }
 

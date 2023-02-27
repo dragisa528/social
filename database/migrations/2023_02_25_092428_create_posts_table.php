@@ -17,6 +17,8 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->longText('content');
             $table->timestamps();
+            
+            $table->index(['user_id', 'created_at']);
         });
     }
 

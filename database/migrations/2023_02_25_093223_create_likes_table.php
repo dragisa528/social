@@ -17,6 +17,8 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('post_id');
             $table->timestamps();
+
+            $table->index(['user_id', 'post_id']);
         });
     }
 
